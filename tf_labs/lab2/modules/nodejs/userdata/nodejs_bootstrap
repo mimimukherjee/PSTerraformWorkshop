@@ -1,0 +1,33 @@
+#!/bin/bash
+#touch ~/Readme.txt
+LOG=~/bootstrap.log
+ln /usr/share/zoneinfo/America/Chicago /etc/localtime
+
+#yum update -y
+
+echo `date` >>$LOG
+echo '########## install nodejs  ##############' >>$LOG
+curl --silent --location https://rpm.nodesource.com/setup_9.x | bash - 
+yum install -y nodejs
+yum install -y git
+firewall-offline-cmd --add-service=http
+systemctl enable  firewalld
+systemctl restart  firewalld
+
+echo "10.0.4.2   mysql_host " >> /etc/hosts
+_
+echo 'clone work-better-jet app from git repo' >>$LOG
+mkdir /app
+cd /app
+git clone https://github.com/mimimukherjee/work-better-jet.git
+
+cd work-better-jet/work-better-jet
+echo 'npm install work-better-jet app ' >>$LOG
+npm install
+npm install mysql
+npm install mysqljs/mysql
+echo 'npm start work-better-jet app ' >>$LOG
+node server.js 1>>$LOG 2>&1 &
+
+echo 'work-better-jet app started' >>$LOG
+echo `date` >>$LOG

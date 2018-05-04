@@ -1,0 +1,15 @@
+#set -x
+
+
+iscsiadm -m node -o new -T __IQN__ -p __IPV4_PORT__
+iscsiadm -m node -o update -T __IQN__ -n node.startup -v automatic
+iscsiadm -m node -T __IQN__ -p __IPV4_PORT__ -l 
+
+
+mkfs -t  ext4 /dev/sdb <<EOF
+y
+EOF
+
+mkdir /u01
+echo "/dev/sdb	/u01	ext4	defaults,noatime,_netdev	0	2" >>/etc/fstab
+mount -a

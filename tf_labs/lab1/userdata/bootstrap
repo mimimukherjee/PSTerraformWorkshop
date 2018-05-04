@@ -1,0 +1,15 @@
+#!/bin/bash
+#touch ~/Readme.txt
+
+ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
+#ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
+#Available timezone in US:
+#Alaska    Arizona  Eastern       Hawaii          Michigan  Pacific      Samoa
+#Aleutian  Central  East-Indiana  Indiana-Starke  Mountain  Pacific-New
+#Available timezone in America:
+#Anchorage      Indiana         Indianapolis    New_York        Juneau
+#Denver         Kentucky        Detroit         Knox_IN         North_Dakota    
+#Los_Angeles    Louisville      Phoenix         Boise           Chicago
+
+yum update -y
+

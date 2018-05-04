@@ -1,0 +1,21 @@
+module "vcn" {
+  source = "../modules/vcn"
+  tenancy_ocid = "${var.tenancy_ocid}"
+  compartment_ocid = "${var.compartment_ocid}"
+  ssh_public_key = "${var.ssh_public_key}"
+  env_prefix = "${var.env_prefix}"
+  provLB = "false"
+}
+
+######################################################
+#
+# Call module db and module nodejs here
+#
+######################################################
+
+output "WebServerIPs" {
+  value = "${module.nodejs.WebServerPubIPs}"
+}
+
+
+

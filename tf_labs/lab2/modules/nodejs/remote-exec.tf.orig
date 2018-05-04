@@ -1,0 +1,46 @@
+resource "null_resource" "exec" {
+    //depends_on = ["oci_core_instance.webserver"]
+    //count = "${var.WebServerCnt}"
+
+    provisioner "file" {
+        connection {
+            agent = false
+            timeout = "30m"
+            host = "${element(oci_core_instance.webserver.*.public_ip, count.index)}"
+            user = "opc"
+            private_key = "${var.ssh_private_key}"
+        }
+        source = "${path.module}/userdata/work-better-jet.zip"
+        destination = "~/work-better-jet.zip"
+    }
+
+    provisioner "file" {
+        connection {
+            agent = false
+            timeout = "30m"
+            host = "${element(oci_core_instance.webserver.*.public_ip, count.index)}"
+            user = "opc"
+            private_key = "${var.ssh_private_key}"
+        }
+        source = "${path.module}/userdata/install_app.sh"
+        destination = "~/install_app.sh"
+    }
+
+    provisioner "remote-exec" {
+        connection {
+        agent = false
+        timeout = "30m"
+        host = "${element(oci_core_instance.webserver.*.public_ip, count.index)}"
+        user = "opc"
+        private_key = "${var.ssh_private_key}"
+        }
+        inline = [
+			"sudo curl --silent --location https://rpm.nodesource.com/setup_9.x | sudo bash - ",
+			"sudo yum install -y nodejs",
+                        "chmod +x install_app.sh",
+                        "sudo ~opc/install_app.sh",
+                        "echo work-better-jet app started  "
+        ]
+    }
+
+}

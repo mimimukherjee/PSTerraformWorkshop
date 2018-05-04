@@ -1,0 +1,37 @@
+#!/bin/bash
+ln /usr/share/zoneinfo/America/Chicago /etc/localtime
+
+#run as root
+LOG=~/bootstrap.log
+echo `date` >>$LOG
+echo '########## install mysql  ##############' >>$LOG
+
+wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+rpm -Uvh mysql57-community-release-el7-11.noarch.rpm
+yum install -y  mysql-community-server
+systemctl start mysqld.service
+systemctl status mysqld.service
+
+echo 'clone mysql_config from git repo' >>$LOG
+yum install -y git
+
+mkdir /config
+cd /config
+git clone https://github.com/mimimukherjee/mysql_config.git
+
+echo 'configure mysql' >>$LOG
+password=`grep "A temporary password is generated for root@localhost:" /var/log/mysqld.log |cut -d ":" -f 4- |awk '{$1=$1};1'`
+
+newpwd="Welc0me_2017"
+
+mysql --connect-expired-password -uroot -p$password < mysql_config/changepwd.sql
+mysql -uroot -p$newpwd < mysql_config/dump.sql
+
+firewall-offline-cmd --add-port=3306/tcp
+systemctl enable  firewalld
+systemctl restart  firewalld
+
+echo 'mysql configuration complete' >>$LOG
+echo `date` >>$LOG
+
+yum update -y
